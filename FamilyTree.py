@@ -208,3 +208,22 @@ class FamilyTree(object):
 
     def getPeopleList(self):
         return self.people
+
+    def getSpouse(self, person_id):
+        pass
+    def listParentDetails(self, person_id):
+        pass
+    def listSiblings(self, person_id):
+        pass
+    def listSteps(self, person_id):
+        pass
+    def listUnclesAunties(self, person_id):
+        pass
+    def listGrandParents(self, person_id):
+        pass
+    def listGrandChildren(self, person_id):
+        pass
+    def listNephews(self, person_id):
+        pass
+    def listCousins(self, person_id):
+        pass

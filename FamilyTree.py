@@ -49,6 +49,7 @@ class FamilyTree(object):
             else:
                 mother.getItem().setIsMother(True)
                 child.addLinkToParent(mother)
+                #mother.addLinkToChild(child)
                 return True
 
         return False
@@ -63,6 +64,7 @@ class FamilyTree(object):
             else:
                 father.getItem().setIsFather(True)
                 child.addLinkToParent(father)
+                #father.addLinkToChild(child)
                 return True
 
         return False
@@ -76,8 +78,8 @@ class FamilyTree(object):
         if partner1 is not None and partner2 is not None:
             # make sure that neither person is currently married at the moment
             if partner1.sideLinksIsEmpty() == True or partner2.sideLinksIsEmpty() == True:
-                partner1.getItem().setIsMarried = True
-                partner2.getItem().setIsMarried = True
+                partner1.getItem().setIsMarried(True)
+                partner2.getItem().setIsMarried(True)
                 # adds two way link between the partners
                 partner1.addSideLink(partner2)
 
@@ -114,11 +116,11 @@ class FamilyTree(object):
 
         if partner1 is not None or partner2 is not None:
             # make sure that the couple actually is married
-            if partner1.sideLinksIsEmpty() is not True or partner2.sideLinksIsEmpty() is not True:
-                partner1.getItem().setIsMarried = False
-                partner2.getItem().setIsMarried = False
-                partner1.getItem().setIsDivorced = True
-                partner2.getItem().setIsDivorced = True
+            if partner1.sideLinksIsEmpty() is False or partner2.sideLinksIsEmpty() is False:
+                partner1.getItem().setIsMarried(False)
+                partner2.getItem().setIsMarried(False)
+                partner1.getItem().setIsDivorced(True)
+                partner2.getItem().setIsDivorced(True)
                 # removes link between partners
                 partner1.removeSideLink(partner2)
 
@@ -154,19 +156,22 @@ class FamilyTree(object):
             if person.isAdopted():
                 details = details + pronoun + " is adopted."
             if person.isMarried():
-                details = details + person_name + " currently married to" + node.getSpouse().getName()
+                details = details + person_name + " currently married to " + str(self.getSpouse(person.person_id)[0])
             if person.isDivorced():
-                details = details + pronoun + "has had divorce(s) in the past."
-                spouses_name = None
-                former_spouses = node.getFormerSpouses()
-                if former_spouses is not None:
-                    index = -1
-                    for spouse in former_spouses:
-                        index = index + 1
-                        spouses_name.locals = " " + spouse.getItem().getName()
+                details = details + pronoun + " has had a/some divorce(s) in the past."
+                former_spouses = self.getFormerSpouses(person_id)
+                if len(former_spouses) > 0:
+                    index = 0
+                    spouses_name = ""
+                    while index < len(former_spouses):
+
+                        spouses_name += " " + former_spouses[index].getItem().getName()
                         if index < len(former_spouses):
-                            spouses_name = ","
-                details = details + "Namely," + spouses_name
+                            spouses_name += ","
+                        index = index + 1
+
+                    details = details + " Namely," + spouses_name
+
         else:
             print("%s is not in the database" % person_name)
 
@@ -283,7 +288,7 @@ class FamilyTree(object):
         emp = None
         if node is not None:
             local_details = ""
-            if node.linksToParentIsEmpty() is not True:
+            if node.linksToParentIsEmpty() is False:
                 parents = node.getParentLinks()
                 for parent in parents:
                     if parent.getItem().isMother():
@@ -310,10 +315,10 @@ class FamilyTree(object):
         emp = None
         if node is not None:
             local_details = ""
-            if node.linksToParentIsEmpty() is not True:
+            if node.linksToParentIsEmpty() is False:
                 parents = node.getParentLinks()
                 for parent in  parents:
-                    if parent.sideLinksIsEmpty() is not True and node.containsLinkToParent(parent.getSideLinks()[0]) is not True:
+                    if parent.sideLinksIsEmpty() is False and node.containsLinkToParent(parent.getSideLinks()[0]) is False:
                         local_details = local_details + "StepParent: "
                         local_details += str(parent.getSideLinks()[0].getItem())
                 return local_details
@@ -326,18 +331,22 @@ class FamilyTree(object):
 
 
     def listParentDetails(self, person_id):
-        global details
+        details = ""
         node = self.getPerson(person_id)
 
         if node is not None:
             person = node.getItem()
             person_name = person.getName()
+            temp = self.listParents(person_id)
+            if temp is not None:
+                details = details + temp
 
-            details = self.listParents(person_id)
-            details =  str(details) + self.listStepParents(person_id)
+            temp = self.listStepParents(person_id)
+            if temp is not None:
+                details = details + temp
 
         if details is None:
-            details = str(details) + person_name + " doesn't have any parent listed."
+            details = person_name + " doesn't have any parent listed."
 
         return details
 
@@ -352,10 +361,10 @@ class FamilyTree(object):
         if node is not None:
             # first, we check if person has parents
             person = node.getItem()
-            if node.linksToParentIsEmpty() is not True:
+            if node.linksToParentIsEmpty() is False:
                 parents = node.getParentLinks()
                 for parent in parents:
-                    if parent.sideLinksIsEmpty() is not True:
+                    if parent.sideLinksIsEmpty() is False:
                         partner  = parent.getSideLinks()[0]
                         partner_sibling = partner.getChildLinks()
                         for sibling in partner_sibling:
@@ -370,7 +379,7 @@ class FamilyTree(object):
                 else:
                     details = details + "Step sibling: "
 
-                details = details + str(sibling) + "\n"
+                details = details + str(sibling.getItem()) + "\n"
 
         return details
 
@@ -386,7 +395,7 @@ class FamilyTree(object):
 
         if node is not None:
             # first, we check if person has parents
-            if node.linksToParentIsEmpty() is not True:
+            if node.linksToParentIsEmpty() is False:
                 parents = node.getParentLinks()
                 for parent in parents:
                     child_links = parent.getChildLinks()
@@ -396,7 +405,7 @@ class FamilyTree(object):
                         if sibling != node.getItem():
                             temp_sibling_parents = sibling.getParentLinks()
                             for sibling_parents in temp_sibling_parents:
-                                if node.containsParentLink(sibling_parents) is not True:
+                                if node.containsParentLink(sibling_parents) is False:
                                     if sibling not in halfsiblings:
                                         halfsiblings.append(sibling)
                                     break
@@ -407,7 +416,7 @@ class FamilyTree(object):
 
                             temp_person_parent = node.getParentLinks()
                             for person_parent in temp_person_parent:
-                                if sibling.containsParentLink(person_parent) is not True:
+                                if sibling.containsParentLink(person_parent) is False:
                                     if sibling not in halfsiblings:
                                         halfsiblings.append(sibling)
 
@@ -430,7 +439,7 @@ class FamilyTree(object):
                     else:
                         details = details + "Sibling: "
 
-                    details = details + str(sibling) + "\n"
+                    details = details + str(sibling.getItem()) + "\n"
             # half sibling
             elif halfsiblings is not None:
                 for sibling in halfsiblings:
@@ -439,7 +448,7 @@ class FamilyTree(object):
                     else:
                         details = details + "Half Sibling: "
 
-                    details = details + str(sibling) + "\n"
+                    details = details + str(sibling.getItem()) + "\n"
             elif stepsiblings is not None:
                 details = step_sibling_details
             else:
@@ -453,14 +462,18 @@ class FamilyTree(object):
         node = self.getPerson(person_id)
         person_name = node.getItem().getName()
         if node is not None:
-            partner = node.getSideLinks()[0]
-            child_list = partner.getChildLinks()
-            if child_list is not None:
-                for child in child_list:
-                    if node.containsChildLink(child) is not True:
-                        print ("Stepchild: " + str(child))
+            temp = node.getSideLinks()
+            partner = None
+            if len(temp) > 0:
+                partner = temp[0]
+            if partner is not None:
+                child_list = partner.getChildLinks()
+                if child_list is not None:
+                    for child in child_list:
+                        if node.containsLinkToChild(child) is False:
+                            print ("Stepchild: " + str(child.getItem()) + "\n")
             else:
-                print("There is no step child for %s in database.", person_name)
+                print("There is no step child for %s in database." % person_name)
 
         else:
             print("There is particular person in database.")
@@ -468,38 +481,42 @@ class FamilyTree(object):
 
 
     def listChildren(self, person_id):
-        global details
-        global node
+
         node = self.getPerson(person_id)
         person_name = node.getItem().getName()
         if node is not None:
-            if node.linksToChildIsEmpty():
-                details = str(details) + person_name + "'s children: "
+            if node.linksToChildIsEmpty() is False:
+                details = person_name + "'s children: \n"
                 child_list = node.getChildLinks()
                 for child in child_list:
                     if child.getItem().isAdopted():
-                        details = details + "Adopted child: "
+                        details += "Adopted child: \n"
                     else:
-                        details = details + "Child "
+                        details += "Child \n"
 
-                    details = details + str(child)
+                    details +=  str(child.getItem()) + "\n"
 
                 # now check if partner have step children
-                details = self.getStepChildren(person_id)
-
-                print(details)
+                tempstep = self.getStepChildren(person_id)
+                if tempstep is not None:
+                    details += tempstep
 
                 if details is None:
                     print("%s has no child on record." % person_name)
 
                 return details
             else:
-                print("There is no child for %s in database.", person_name)
+                print("There is no child for %s in database." % person_name)
 
         else:
             print("There is particular person in database.")
+
     def listSteps(self, person_id):
-        pass
+        global details
+        print("Step Children: \n")
+        details = self.getStepChildren(person_id)
+        self.listStepSiblings(person_id)
+
     def listUnclesAunties(self, person_id):
         pass
     def listGrandParents(self, person_id):
@@ -510,3 +527,26 @@ class FamilyTree(object):
         pass
     def listCousins(self, person_id):
         pass
+
+    def isParent(self, parent_id, child_id):
+        parent = self.getPerson(parent_id)
+        child = self.getPerson(child_id).getItem()
+        if parent is not None and child is not None:
+            return parent.containsLinkToChild(child)
+        else:
+            print("Parent or child is not on record.")
+            return False
+
+    def isStepParent(self, parent_id, child_id):
+        # not blood related
+        if self.isParent(parent_id, child_id) is False:
+            node = self.getPerson(parent_id)
+            child_asked = self.getPerson(child_id).getItem()
+            partner = node.getSideLinks()[0]
+            child_list = partner.getChildLinks()
+            if child_list is not None:
+                for child in child_list:
+                    if node.containsLinkToChild(child) is False:
+                        return child == child_asked
+
+        return False

@@ -21,19 +21,21 @@ def Menu():
     # print("13.\tList maternal lineage (female line back to oldest woman in the tree)")
     # print("14.\tList all great great… (repeated N times) grandparents")
     # print("15.\tList all great great… (repeated N times) grandchildren\n")
-    print("13. Want to make your own query?")
+    print("13.\t Want to make your own query?")
+    print("14.\t Check if two person is parent and child")
+    print("15.\t Check if child is stepchild of some parent")
 
 
     print("X\tEXIT\n")
 
-    choice = input("Enter menu choice 1-12, X: ")
+    choice = input("Enter menu choice 1-15, X: ")
 
     return choice
 
 
-def input_id():
-    id = input("Input person's ID: ")
-    print("\n")
+def input_id(type="Person"):
+    text = "Input %s's ID: " % type
+    id = input(text)
     return id
 
 def input_query():
@@ -47,7 +49,7 @@ def second_case():
     id = input_id()
     result =  FamilyTree.getSpouse(id)
     if result is not None:
-        print(str(FamilyTree.getSpouse(id)))
+        print(str(result[0]))
 
 
 def third_case():
@@ -97,6 +99,23 @@ def thirteenth_case():
     query = input_query()
     pass
 
+def fourteenth_case():
+    parent_id = input_id("Parent")
+    child_id = input_id("Child")
+    if FamilyTree.isParent(parent_id, child_id):
+        print("Yes")
+    else:
+        print("No")
+
+
+def fifteenth_case():
+    parent_id = input_id("Parent")
+    child_id = input_id("Child")
+    if FamilyTree.isStepParent(parent_id, child_id):
+        print("Yes")
+    else:
+        print("No")
+
 
 mycase = {
     '1': first_case,
@@ -111,7 +130,9 @@ mycase = {
     '10': tenth_case,
     '11': eleventh_case,
     '12': twelvth_case,
-    '13': thirteenth_case()
+    '13': thirteenth_case,
+    '14': fourteenth_case,
+    '15': fifteenth_case
 }
 
 # initialization
@@ -125,7 +146,6 @@ print('Data loaded..')
 while str(choice).lower() != 'x':
     choice = Menu()
     myfunc = mycase[choice]
-    print("Result: ")
     myfunc()
 
 # index = -1

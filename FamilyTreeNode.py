@@ -13,6 +13,7 @@ class FamilyTreeNode(object):
         return str(self.item)
 
     def addLinkToParent(self, parent):
+        # print("hehehe to parent")
         status = 0
         status = status + self.addLinkToParentOneWay(parent)
         status = status + parent.addLinkToChildOneWay(self)
@@ -45,6 +46,7 @@ class FamilyTreeNode(object):
         return status
 
     def addLinkToChild(self, child):
+        # print("hehehe to child")
         status = 0
         status = status + self.addLinkToChildOneWay(child)
         status = status + child.addLinkToParentOneWay(self)
@@ -52,8 +54,9 @@ class FamilyTreeNode(object):
         return status
 
     def addLinkToChildOneWay(self, child):
+        # print("kepanggil")
         status = 0
-        if self.containsLinkToChild(child) is True:
+        if self.containsLinkToChild(child) is False:
             self.childLinks.append(child)
         else:
             status = 1
@@ -81,7 +84,6 @@ class FamilyTreeNode(object):
         status = 0
         self.addSideLinkOneWay(side)
         side.addSideLinkOneWay(self)
-        print("berhasil")
         return status
 
 
@@ -135,13 +137,13 @@ class FamilyTreeNode(object):
         return contains
 
     def sideLinksIsEmpty(self):
-        return not self.sideLinks
+        return len(self.sideLinks) == 0
 
     def linksToChildIsEmpty(self):
-        return not self.childLinks
+        return len(self.childLinks) == 0
 
     def linksToParentIsEmpty(self):
-        return not self.parentLinks
+        return len(self.parentLinks) == 0
 
     def __eq__(self, other):
         return self.item.person_id == other.item.person_id

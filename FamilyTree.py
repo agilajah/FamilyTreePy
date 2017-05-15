@@ -4,6 +4,7 @@ from Person import Person
 
 tempEv = None
 pronoun = None
+sibling = None
 
 
 class FamilyTree(object):
@@ -17,6 +18,9 @@ class FamilyTree(object):
 
     def setMarriageList(self, marriage):
         self.marriage = marriage
+
+    def getMarriageList(self):
+        return self.marriage
 
     def setDivorce(self, divorce):
         self.divorce = divorce
@@ -234,19 +238,40 @@ class FamilyTree(object):
         return person
 
     def getMarriage(self, marriage_id):
-        marriage = None
+        marr = None
+        for marriage in self.marriage:
+            if marriage.getMarriageId() == marriage_id:
+                return marriage
+        return marr
 
 
     def getPeopleList(self):
         return self.people
 
+    def getFormerSpouses(self, person_id):
+        node = self.getPerson(person_id)
+        former_spouse = node.getFormerSpouses()
+        if len(former_spouse) == 0:
+            print(node.getItem().getName() + " has no former spouse(s)")
+        else:
+            return former_spouse
+
     def getSpouse(self, person_id):
         node = self.getPerson(person_id)
         spouse = node.getSideLinks()
-        if spouse is None or spouse[0] is None:
-            print(node.getItem().getName() + " has no spouse.")
+        if len(spouse) == 0:
+            print(node.getItem().getName() + " currently has no spouse.")
+            list_former_spouses = self.getFormerSpouses(person_id)
+            if list_former_spouses is not None:
+                if len(list_former_spouses) == 1:
+                    print("But there is a former spouse for this particular person: ")
+                else:
+                    print("But there are some former spouses for this particular person: ")
+
+                for form_spouse in list_former_spouses:
+                    print(str(form_spouse))
         else:
-            return spouse[0]
+            return spouse
 
     # find blood parent
     def listParents(self, person_id):
@@ -303,7 +328,114 @@ class FamilyTree(object):
 
 
 
+    def listStepSiblings(self, person_id, fullsiblings = None, halfsiblings = None, stepsiblings_temp = None):
+        # make sure person exist
+        node = self.getPerson(person_id)
+        stepsiblings = stepsiblings_temp
+        details = ""
+
+        if node is not None:
+            # first, we check if person has parents
+            person = node.getItem()
+            if node.linksToParentIsEmpty() is not True:
+                parents = node.getParentLinks()
+                for parent in parents:
+                    if parent.sideLinksIsEmpty() is not True:
+                        partner  = parent.getSideLinks()[0]
+                        partner_sibling = partner.getChildLinks()
+                        for sibling in partner_sibling:
+                            if person != sibling:
+                                if sibling not in fullsiblings and sibling not in halfsiblings and sibling not in stepsiblings:
+                                    stepsiblings.append(sibling)
+
+        if stepsiblings is not None:
+            for sibling in stepsiblings:
+                if sibling.getItem().isAdopted():
+                    details = details + "Adopted step sibling: "
+                else:
+                    details = details + "Step sibling: "
+
+                details = details + str(sibling) + "\n"
+
+        return details
+
     def listSiblings(self, person_id):
+        global details
+        halfsiblings = []
+        fullsiblings = []
+        stepsiblings = []
+        global sibling
+        # make sure person exist
+        node = self.getPerson(person_id)
+        person_name = node.getItem().getName()
+
+        if node is not None:
+            # first, we check if person has parents
+            if node.linksToParentIsEmpty() is not True:
+                parents = node.getParentLinks()
+                for parent in parents:
+                    child_links = parent.getChildLinks()
+
+                    for sibling in child_links:
+                        # check if we are not looking for ourselves
+                        if sibling != node.getItem():
+                            temp_sibling_parents = sibling.getParentLinks()
+                            for sibling_parents in temp_sibling_parents:
+                                if node.containsParentLink(sibling_parents) is not True:
+                                    if sibling not in halfsiblings:
+                                        halfsiblings.append(sibling)
+                                    break
+
+
+                            # now we search for another half siblings
+                            # if sibling only share one parent, then it is called half sibling
+
+                            temp_person_parent = node.getParentLinks()
+                            for person_parent in temp_person_parent:
+                                if sibling.containsParentLink(person_parent) is not True:
+                                    if sibling not in halfsiblings:
+                                        halfsiblings.append(sibling)
+
+                                    break
+
+                            # if not half sibling, it must be full siblings
+
+                            if sibling not in halfsiblings and sibling not in fullsiblings:
+                                fullsiblings.append(sibling)
+
+                # now we search for step siblings
+                step_sibling_details = self.listStepsSiblings(person_id, fullsiblings, halfsiblings, stepsiblings)
+
+            # details
+            # full sibling
+            if fullsiblings is not None:
+                for sibling in fullsiblings:
+                    if sibling.getItem().isAdopted():
+                        details = details + "Adopted sibling: "
+                    else:
+                        details = details + "Sibling: "
+
+                    details = details + str(sibling) + "\n"
+            # half sibling
+            elif halfsiblings is not None:
+                for sibling in halfsiblings:
+                    if sibling.getItem().isAdopted():
+                        details = details + "Adopted half sibling: "
+                    else:
+                        details = details + "Half Sibling: "
+
+                    details = details + str(sibling) + "\n"
+            elif stepsiblings is not None:
+                details = step_sibling_details
+            else:
+                print("There is no siblings listed for %s", person_name)
+        else:
+            print("There is no %s in database", person_name)
+
+
+
+
+
         pass
     def listSteps(self, person_id):
         pass

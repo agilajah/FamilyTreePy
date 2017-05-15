@@ -9,6 +9,9 @@ class FamilyTreeNode(object):
         self.sideLinks = [] # relationship/marriage
         self.former_spouses = []
 
+    def __str__(self):
+        return str(self.item)
+
     def addLinkToParent(self, parent):
         status = 0
         status = status + self.addLinkToParentOneWay(parent)
@@ -78,7 +81,7 @@ class FamilyTreeNode(object):
         status = 0
         self.addSideLinkOneWay(side)
         side.addSideLinkOneWay(self)
-
+        print("berhasil")
         return status
 
 
@@ -166,6 +169,9 @@ class FamilyTreeNode(object):
 
     def getSideLinks(self):
         return self.sideLinks
+
+    def getFormerSpouses(self):
+        return self.former_spouses
 
     def setSideLinks(self, sideLinks):
         self.sideLinks = sideLinks

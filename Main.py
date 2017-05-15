@@ -43,47 +43,53 @@ def first_case():
 
 def second_case():
     id = input_id()
-    print(FamilyTree.getSpouse(id))
+    result =  FamilyTree.getSpouse(id)
+    if result is not None:
+        print(str(FamilyTree.getSpouse(id)))
+
 
 def third_case():
     id = input_id()
-    print(FamilyTree.listParentDetails(id))
+    result =  FamilyTree.getFormerSpouses(id)
+    if result is not None:
+        print(str(FamilyTree.getFormerSpouses(id)))
 
 def fourth_case():
     id = input_id()
-    print(FamilyTree.listChildren(id))
+    print(FamilyTree.listParentDetails(id))
 
 def fifth_case():
     id = input_id()
-    print(FamilyTree.listSiblings(id))
+    print(FamilyTree.listChildren(id))
 
 def sixth_case():
     id = input_id()
-    print(FamilyTree.listSteps(id))
+    print(FamilyTree.listSiblings(id))
 
 def seventh_case():
     id = input_id()
-    print(FamilyTree.listUnclesAunties(id))
+    print(FamilyTree.listSteps(id))
 
 def eighth_case():
     id = input_id()
-    print(FamilyTree.listGrandParents(id))
+    print(FamilyTree.listUnclesAunties(id))
 
 def ninth_case():
     id = input_id()
-    print(FamilyTree.listGrandChildren(id))
+    print(FamilyTree.listGrandParents(id))
 
 def tenth_case():
     id = input_id()
-    print(FamilyTree.listNephews(id))
+    print(FamilyTree.listGrandChildren(id))
 
 def eleventh_case():
     id = input_id()
-    print(FamilyTree.listCousins(id))
+    print(FamilyTree.listNephews(id))
 
 def twelvth_case():
     id = input_id()
-    pass
+    print(FamilyTree.listCousins(id))
+
 
 mycase = {
     '1': first_case,

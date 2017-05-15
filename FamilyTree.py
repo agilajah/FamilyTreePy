@@ -5,6 +5,8 @@ from Person import Person
 tempEv = None
 pronoun = None
 sibling = None
+node = None
+details = None
 
 
 class FamilyTree(object):
@@ -42,7 +44,7 @@ class FamilyTree(object):
         mother = self.getPerson(mother_id)
 
         if child is not None and mother is not None:
-            if self.hasMother(child.getItem().getMother()) or mother.containsChildLink(child):
+            if self.hasMother(child.getItem().getMother()) or mother.containsLinkToChild(child):
                 return False
             else:
                 mother.getItem().setIsMother(True)
@@ -56,7 +58,7 @@ class FamilyTree(object):
         father = self.getPerson(father_id)
 
         if child is not None and father is not None:
-            if self.hasFather(child.getItem().getMother()) or father.containsChildLink(child):
+            if self.hasFather(child.getItem().getMother()) or father.containsLinkToChild(child):
                 return False
             else:
                 father.getItem().setIsFather(True)
@@ -276,15 +278,15 @@ class FamilyTree(object):
     # find blood parent
     def listParents(self, person_id):
         node = self.getPerson(person_id)
+        person = node.getItem()
+        person_name = person.getName()
         emp = None
         if node is not None:
-            person = node.getItem()
-            person_name = person.getName()
             local_details = ""
-            if node.linksToParentEmpty() is not True:
+            if node.linksToParentIsEmpty() is not True:
                 parents = node.getParentLinks()
                 for parent in parents:
-                    if parent.getItem().isMother:
+                    if parent.getItem().isMother():
                         local_details = local_details + person_name + "'s Mother: "
                         local_details = local_details + str(parent.getItem()) + "\n"
                     else:
@@ -292,6 +294,10 @@ class FamilyTree(object):
                         local_details = local_details + str(parent.getItem()) + "\n"
 
                 return local_details
+            else:
+                print("%s has no parents on record." % person_name)
+        else:
+            print("There is no %s in database" % person_name)
         return emp
 
 
@@ -299,32 +305,41 @@ class FamilyTree(object):
     # find step parent
     def listStepParents(self, person_id):
         node = self.getPerson(person_id)
+        person = node.getItem()
+        person_name = person.getName()
         emp = None
         if node is not None:
             local_details = ""
-            if node.linksToParentEmpty() is not True:
+            if node.linksToParentIsEmpty() is not True:
                 parents = node.getParentLinks()
                 for parent in  parents:
-                    if parent.sideLinksIsEmpty() is not True and node.containsParentLink(parent.getSideLinks()[0] is not True):
+                    if parent.sideLinksIsEmpty() is not True and node.containsLinkToParent(parent.getSideLinks()[0]) is not True:
                         local_details = local_details + "StepParent: "
                         local_details += str(parent.getSideLinks()[0].getItem())
                 return local_details
+            else:
+                print("%s has no step parents on record." % person_name)
+        else:
+            print("There is no %s in database" % person_name)
+
         return emp
 
 
     def listParentDetails(self, person_id):
-
+        global details
         node = self.getPerson(person_id)
-        person = node.getItem()
-        person_name = person.getName()
 
-        local_details = self.listParents(person_id)
-        local_details = self.listStepParents(person_id)
+        if node is not None:
+            person = node.getItem()
+            person_name = person.getName()
 
-        if local_details is None:
-            local_details = local_details + person_name + "Doesn't have any parent listed."
+            details = self.listParents(person_id)
+            details =  str(details) + self.listStepParents(person_id)
 
-        return local_details
+        if details is None:
+            details = str(details) + person_name + " doesn't have any parent listed."
+
+        return details
 
 
 
@@ -432,11 +447,57 @@ class FamilyTree(object):
         else:
             print("There is no %s in database", person_name)
 
+    def getStepChildren(self, person_id):
+        global details
+        global node
+        node = self.getPerson(person_id)
+        person_name = node.getItem().getName()
+        if node is not None:
+            partner = node.getSideLinks()[0]
+            child_list = partner.getChildLinks()
+            if child_list is not None:
+                for child in child_list:
+                    if node.containsChildLink(child) is not True:
+                        print ("Stepchild: " + str(child))
+            else:
+                print("There is no step child for %s in database.", person_name)
+
+        else:
+            print("There is particular person in database.")
 
 
 
+    def listChildren(self, person_id):
+        global details
+        global node
+        node = self.getPerson(person_id)
+        person_name = node.getItem().getName()
+        if node is not None:
+            if node.linksToChildIsEmpty():
+                details = str(details) + person_name + "'s children: "
+                child_list = node.getChildLinks()
+                for child in child_list:
+                    if child.getItem().isAdopted():
+                        details = details + "Adopted child: "
+                    else:
+                        details = details + "Child "
 
-        pass
+                    details = details + str(child)
+
+                # now check if partner have step children
+                details = self.getStepChildren(person_id)
+
+                print(details)
+
+                if details is None:
+                    print("%s has no child on record." % person_name)
+
+                return details
+            else:
+                print("There is no child for %s in database.", person_name)
+
+        else:
+            print("There is particular person in database.")
     def listSteps(self, person_id):
         pass
     def listUnclesAunties(self, person_id):

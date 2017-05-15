@@ -26,6 +26,7 @@ class PeopleDataLoader(object):
                     # first check parent - whether it is actually
                     temp_mother_id = row[4]
                     temp_father_id = row[5]
+                    # check if mother and father is actually exist
                     if str(temp_mother_id).lower() != 'null' or str(temp_father_id).lower() != 'null':
                         mother = FamilyTree.getPerson(temp_mother_id)
                         father = FamilyTree.getPerson(temp_father_id)
@@ -34,18 +35,23 @@ class PeopleDataLoader(object):
                         if father is None:
                             raise FatherDontExistError(temp_father_id)
 
-                        # link to father and mother
-                        FamilyTree.makeLinkToMother(row[0], temp_mother_id)
-                        FamilyTree.makeLinkToFather(row[0], temp_father_id)
+
 
                     # if there is no problem whatsoever
                     temp_person = Person(row[0], row[1], row[2], row[3], row[4], row[5])
                     familyTreeNode = FamilyTreeNode(temp_person)
+
+                    FamilyTree.people.append(familyTreeNode)
+
+                    if str(temp_mother_id).lower() != 'null' or str(temp_father_id).lower() != 'null':
+                        # link to father and mother
+                        FamilyTree.makeLinkToMother(row[0], temp_mother_id)
+                        FamilyTree.makeLinkToFather(row[0], temp_father_id)
                     # print(row[0])
                     # print(row[1])
                     # print(row[2])
 
-                    FamilyTree.people.append(familyTreeNode)
+
                 except FatherDontExistError as e:
                     print ("%s" % e.printMsg())
                     print ('Gagal baca row %d' % (index))

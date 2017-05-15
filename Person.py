@@ -1,7 +1,7 @@
 
 
 class Person(object):
-    def __init__(self, person_id, name, gender, birth_date, father, mother):
+    def __init__(self, person_id, name, gender, birth_date, mother, father):
             self.person_id = person_id
             self.name = name
             self.gender = gender

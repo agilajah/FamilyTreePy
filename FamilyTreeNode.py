@@ -21,7 +21,7 @@ class FamilyTreeNode(object):
 
     def addLinkToParentOneWay(self, parent):
         status = 0
-        if self.containsParentLink(parent) is True:
+        if self.containsLinkToParent(parent) is True:
             status = 1
         else:
             self.parentLinks.append(parent)
@@ -113,7 +113,7 @@ class FamilyTreeNode(object):
         return status
 
 
-    def containstLinkToParent(self, parent):
+    def containsLinkToParent(self, parent):
         contains = False
         if parent in self.parentLinks:
             contains = True
@@ -144,7 +144,7 @@ class FamilyTreeNode(object):
         return not self.parentLinks
 
     def __eq__(self, other):
-        return self.item == other.item
+        return self.item.person_id == other.item.person_id
 
     def equals(self, comparedNode):
         return self.item.equals(comparedNode.item)

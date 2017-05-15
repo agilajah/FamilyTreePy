@@ -7,20 +7,21 @@ def Menu():
     print("\nFAMILY TREE MENU\n")
     print("1.\tPerson details")
     print("2.\tSpouse")
-    print("3.\tParents details")
-    print("4.\tList children")
-    print("5.\tList siblings (including half-siblings)")
-    print("6.\tList steps(parents, brothers, sisters, children")
-    print("7.\tList uncles, aunties(only biological)")
-    print("8.\tList all grandparents")
-    print("9.\tList all grandchildren")
-    print("10.\tList nephews")
-    print("11.\tList all cousins")
+    print("3.\tFormer Spouses")
+    print("4.\tParents details")
+    print("5.\tList children")
+    print("6.\tList siblings (including half-siblings)")
+    print("7.\tList steps(parents, brothers, sisters, children")
+    print("8.\tList uncles, aunties(only biological)")
+    print("9.\tList all grandparents")
+    print("10.\tList all grandchildren")
+    print("11.\tList nephews")
+    print("12.\tList all cousins")
     # print("12.\tList paternal lineage (male line back to oldest man in the tree)")
     # print("13.\tList maternal lineage (female line back to oldest woman in the tree)")
     # print("14.\tList all great great… (repeated N times) grandparents")
     # print("15.\tList all great great… (repeated N times) grandchildren\n")
-    print("12. Want to make your own query?")
+    print("13. Want to make your own query?")
 
 
     print("X\tEXIT\n")
@@ -35,7 +36,8 @@ def input_id():
     print("\n")
     return id
 
-
+def input_query():
+    pass
 
 def first_case():
     id = input_id()
@@ -50,9 +52,10 @@ def second_case():
 
 def third_case():
     id = input_id()
-    result =  FamilyTree.getFormerSpouses(id)
-    if result is not None:
-        print(str(FamilyTree.getFormerSpouses(id)))
+    result_list =  FamilyTree.getFormerSpouses(id)
+    if result_list is not None:
+        for result in result_list:
+            print(str(result))
 
 def fourth_case():
     id = input_id()
@@ -90,6 +93,10 @@ def twelvth_case():
     id = input_id()
     print(FamilyTree.listCousins(id))
 
+def thirteenth_case():
+    query = input_query()
+    pass
+
 
 mycase = {
     '1': first_case,
@@ -104,6 +111,7 @@ mycase = {
     '10': tenth_case,
     '11': eleventh_case,
     '12': twelvth_case,
+    '13': thirteenth_case()
 }
 
 # initialization

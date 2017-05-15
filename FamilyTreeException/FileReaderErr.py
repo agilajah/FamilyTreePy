@@ -12,29 +12,56 @@ class PeopleDontExistError(FileReaderErr):
 class FatherDontExistError(PeopleDontExistError):
     # Raised when an operation attempts a state
     # transition that's not allowed.
-    def __init__(self, msg=None, id=-1):
+    def __init__(self, id=-1, msg=None):
         # Error message thrown is saved in msg
+        self.msg = ''
         if msg is not None:
             self.msg = msg
         else:
-            self.msg = "Father with %d doesn\'t exist" % (id)
+            self.msg = "Father with id %d doesn\'t exist" % int(id)
+
+    def printMsg(self):
+        return self.msg
 
 class MotherDontExistError(PeopleDontExistError):
     # Raised when an operation attempts a state
     # transition that's not allowed.
-    def __init__(self, msg=None, id=-1):
+    def __init__(self, id=-1, msg=None):
         # Error message thrown is saved in msg
+        self.msg = ''
         if msg is not None:
             self.msg = msg
         else:
-            self.msg = "Mother %d doesn\'t exist" % (id)
+            self.msg = "Mother id  %d doesn\'t exist" % int(id)
+
+    def printMsg(self):
+        return self.msg
+
+
+class PartnerDontExistError(PeopleDontExistError):
+    # Raised when an operation attempts a state
+    # transition that's not allowed.
+    def __init__(self, msg=None, id=-1):
+        # Error message thrown is saved in msg
+        self.msg = ''
+        if msg is not None:
+            self.msg = msg
+        else:
+            self.msg = "Partner with id %d doesn\'t exist" % int(id)
+
+    def printMsg(self):
+        return self.msg
 
 class SpouseDontExistError(PeopleDontExistError):
     # Raised when an operation attempts a state
     # transition that's not allowed.
     def __init__(self, msg=None, id=-1):
         # Error message thrown is saved in msg
+        self.msg = ''
         if msg is not None:
             self.msg = msg
         else:
-            self.msg = "Spouse %d doesn\'t exist" % (id)
+            self.msg = "Spouse with id %d doesn\'t exist" % int(id)
+
+    def printMsg(self):
+        return self.msg

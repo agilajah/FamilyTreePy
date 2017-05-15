@@ -26,6 +26,12 @@ class Person(object):
         else:
             return False
 
+    def getGender(self):
+        return self.gender
+
+    def getPersonId(self):
+        return self.person_id
+
     def setDateOfBirth(self, birth_date):
         self.birth_date = birth_date
 

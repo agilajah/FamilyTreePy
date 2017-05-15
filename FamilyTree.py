@@ -2,6 +2,9 @@ import FamilyTreeNode
 from Marriage import Marriage
 from Person import Person
 
+tempEv = None
+pronoun = None
+
 
 class FamilyTree(object):
     def __init__(self):
@@ -65,7 +68,7 @@ class FamilyTree(object):
         partner2 = self.getPerson(second_person_id)
 
         if partner1 is not None and partner2 is not None:
-            # make sure that neither person is already married
+            # make sure that neither person is currently married at the moment
             if partner1.sideLinksIsEmpty() == True or partner2.sideLinksIsEmpty() == True:
                 partner1.getItem().setIsMarried = True
                 partner2.getItem().setIsMarried = True
@@ -111,7 +114,7 @@ class FamilyTree(object):
                 partner1.getItem().setIsDivorced = True
                 partner2.getItem().setIsDivorced = True
                 # removes link between partners
-                partner1.addSideLink(partner2)
+                partner1.removeSideLink(partner2)
 
                 partner1.getItem().setCurrentMarriage(-1)
                 partner2.getItem().setCurrentMarriage(-1)
@@ -127,12 +130,40 @@ class FamilyTree(object):
 
         return success
 
+
     def listPersonDetails(self, person_id):
         details = ""
+        person_name = ""
+        global pronoun
         node = self.getPerson(person_id)
         if node is not None:
             person = node.getItem()
-            details = details + person.getPersonId() + person.getName()
+            person_name = person.getName()
+            if str(person.getGender()).lower() == 'male':
+                pronoun = "He"
+            else:
+                pronoun = "She"
+
+            details = details + person_name + " has identification number: " + person.getPersonId() + "\n"
+            if person.isAdopted():
+                details = details + pronoun + " is adopted."
+            if person.isMarried():
+                details = details + person_name + " currently married to" + node.getSpouse().getName()
+            if person.isDivorced():
+                details = details + pronoun + "has had divorce(s) in the past."
+                spouses_name = None
+                former_spouses = node.getFormerSpouses()
+                if former_spouses is not None:
+                    index = -1
+                    for spouse in former_spouses:
+                        index = index + 1
+                        spouses_name.locals = " " + spouse.getItem().getName()
+                        if index < len(former_spouses):
+                            spouses_name = ","
+                details = details + "Namely," + spouses_name
+        else:
+            print("%s is not in the database" % person_name)
+
 
         return details
 
@@ -210,9 +241,68 @@ class FamilyTree(object):
         return self.people
 
     def getSpouse(self, person_id):
-        pass
+        node = self.getPerson(person_id)
+        spouse = node.getSideLinks()
+        if spouse is None or spouse[0] is None:
+            print(node.getItem().getName() + " has no spouse.")
+        else:
+            return spouse[0]
+
+    # find blood parent
+    def listParents(self, person_id):
+        node = self.getPerson(person_id)
+        emp = None
+        if node is not None:
+            person = node.getItem()
+            person_name = person.getName()
+            local_details = ""
+            if node.linksToParentEmpty() is not True:
+                parents = node.getParentLinks()
+                for parent in parents:
+                    if parent.getItem().isMother:
+                        local_details = local_details + person_name + "'s Mother: "
+                        local_details = local_details + str(parent.getItem()) + "\n"
+                    else:
+                        local_details = local_details + "Father: "
+                        local_details = local_details + str(parent.getItem()) + "\n"
+
+                return local_details
+        return emp
+
+
+
+    # find step parent
+    def listStepParents(self, person_id):
+        node = self.getPerson(person_id)
+        emp = None
+        if node is not None:
+            local_details = ""
+            if node.linksToParentEmpty() is not True:
+                parents = node.getParentLinks()
+                for parent in  parents:
+                    if parent.sideLinksIsEmpty() is not True and node.containsParentLink(parent.getSideLinks()[0] is not True):
+                        local_details = local_details + "StepParent: "
+                        local_details += str(parent.getSideLinks()[0].getItem())
+                return local_details
+        return emp
+
+
     def listParentDetails(self, person_id):
-        pass
+
+        node = self.getPerson(person_id)
+        person = node.getItem()
+        person_name = person.getName()
+
+        local_details = self.listParents(person_id)
+        local_details = self.listStepParents(person_id)
+
+        if local_details is None:
+            local_details = local_details + person_name + "Doesn't have any parent listed."
+
+        return local_details
+
+
+
     def listSiblings(self, person_id):
         pass
     def listSteps(self, person_id):

@@ -8,17 +8,20 @@ class Person(object):
             self.birth_date = birth_date
             self.father = father
             self.mother = mother
-            self.isMother = False
-            self.isFather = False
-            self.isMarried = False
-            self.isDivorced = False
-            self.isAdopted = False
+            self.isMotherVar = False
+            self.isFatherVar = False
+            self.isMarriedVar = False
+            self.isDivorcedVar = False
+            self.isAdoptedVar = False
             self.currentMarriage = -1
 
     def __eq__(self, other):
         myId = self.person_id
         othersId = other.person_id
         return myId == othersId
+
+    def __str__(self):
+        return "Name: %s, Date of birth: %s, Gender: %s" % (self.name, self.birth_date, self.gender)
 
     def equals(self, comparedPerson):
         if comparedPerson.person_id == self.person_id:
@@ -51,34 +54,34 @@ class Person(object):
         return self.father
 
     def isDivorced(self):
-        return self.isDivorced
+        return self.isDivorcedVar
 
-    def setIsDivorced(self, isDivorced):
-        self.isDivorced = isDivorced
+    def setIsDivorced(self, isDivorcedVar):
+        self.isDivorcedVar = isDivorcedVar
 
     def isFather(self):
-        return self.isFather
+        return self.isFatherVar
 
-    def setIsFather(self, isFather):
-        self.isFather = isFather
+    def setIsFather(self, isFatherVar):
+        self.isFatherVar = isFatherVar
 
     def isMarried(self):
-        return self.isMarried
+        return self.isMarriedVar
 
-    def setIsMarried(self, isMarried):
-        self.isMarried = isMarried
+    def setIsMarried(self, isMarriedVar):
+        self.isMarriedVar = isMarriedVar
 
     def isMother(self):
-        return self.isMother
+        return self.isMotherVar
 
-    def setIsMother(self, isMother):
-        self.isMother = isMother
+    def setIsMother(self, isMotherVar):
+        self.isMotherVar = isMotherVar
 
     def isAdopted(self):
-        return self.isAdopted
+        return self.isAdoptedVar
 
-    def setIsAdopted(self, isAdopted):
-        return self.isAdopted
+    def setIsAdopted(self, isAdoptedVar):
+        return self.isAdoptedVar
 
     def isMale(self):
         return str(self.gender).lower() == "male"

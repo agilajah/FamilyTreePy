@@ -7,6 +7,7 @@ class FamilyTreeNode(object):
         self.parentLinks = []
         self.childLinks = []
         self.sideLinks = [] # relationship/marriage
+        self.former_spouses = []
 
     def addLinkToParent(self, parent):
         status = 0
@@ -90,6 +91,17 @@ class FamilyTreeNode(object):
 
         return status
 
+    def removeSideLinkOneWay(self, side):
+        status = 0
+        if self.containsSideLink(side) is True:
+            # append to list of exes
+            self.former_spouses.append(side)
+            self.sideLinks.remove(side)
+        else:
+            status = 1
+
+        return status
+
     def removeSideLink(self, side):
         status = 0
         status = status + self.removeSideLinkOneWay(side)
@@ -97,14 +109,6 @@ class FamilyTreeNode(object):
 
         return status
 
-    def removeSideLinkeOneWay(self, side):
-        status = 0
-        if self.containsSideLink(side) is True:
-            self.sideLinks.remove(side)
-        else:
-            status = 1
-
-        return status
 
     def containstLinkToParent(self, parent):
         contains = False
@@ -165,3 +169,6 @@ class FamilyTreeNode(object):
 
     def setSideLinks(self, sideLinks):
         self.sideLinks = sideLinks
+
+    def getFormerSpouses(self):
+        return self.former_spouses

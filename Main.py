@@ -32,54 +32,54 @@ def Menu():
 
 def input_id():
     id = input("Input person's ID: ")
-
+    print("\n")
     return id
 
 
 
 def first_case():
     id = input_id()
-    FamilyTree.listPersonDetails(id)
+    print (FamilyTree.listPersonDetails(id))
 
 def second_case():
     id = input_id()
-    FamilyTree.getSpouse(id)
+    print(FamilyTree.getSpouse(id))
 
 def third_case():
     id = input_id()
-    FamilyTree.listParentDetails(id)
+    print(FamilyTree.listParentDetails(id))
 
 def fourth_case():
     id = input_id()
-    FamilyTree.listChildren(id)
+    print(FamilyTree.listChildren(id))
 
 def fifth_case():
     id = input_id()
-    FamilyTree.listSiblings(id)
+    print(FamilyTree.listSiblings(id))
 
 def sixth_case():
     id = input_id()
-    FamilyTree.listSteps(id)
+    print(FamilyTree.listSteps(id))
 
 def seventh_case():
     id = input_id()
-    FamilyTree.listUnclesAunties(id)
+    print(FamilyTree.listUnclesAunties(id))
 
 def eighth_case():
     id = input_id()
-    FamilyTree.listGrandParents(id)
+    print(FamilyTree.listGrandParents(id))
 
 def ninth_case():
     id = input_id()
-    FamilyTree.listGrandChildren(id)
+    print(FamilyTree.listGrandChildren(id))
 
 def tenth_case():
     id = input_id()
-    FamilyTree.listNephews(id)
+    print(FamilyTree.listNephews(id))
 
 def eleventh_case():
     id = input_id()
-    FamilyTree.listCousins(id)
+    print(FamilyTree.listCousins(id))
 
 def twelvth_case():
     id = input_id()
@@ -111,6 +111,7 @@ print('Data loaded..')
 while str(choice).lower() != 'x':
     choice = Menu()
     myfunc = mycase[choice]
+    print("Result: ")
     myfunc()
 
 # index = -1

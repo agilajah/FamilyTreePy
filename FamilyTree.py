@@ -9,7 +9,6 @@ class FamilyTree(object):
         self.marriage = []
         self.divorce = []
 
-
     def setPeopleList(self, people):
         self.people = people
 
@@ -31,8 +30,8 @@ class FamilyTree(object):
 
 
 
-    def makeLinkToMother(self, mother_id):
-        child = self.getPerson(self.person_id)
+    def makeLinkToMother(self, child_id, mother_id):
+        child = self.getPerson(child_id)
         mother = self.getPerson(mother_id)
 
         if child is not None and mother is not None:
@@ -45,8 +44,8 @@ class FamilyTree(object):
 
         return False
 
-    def makeLinkToFather(self, father_id):
-        child = self.getPerson(self.person_id)
+    def makeLinkToFather(self, child_id, father_id):
+        child = self.getPerson(child_id)
         father = self.getPerson(father_id)
 
         if child is not None and father is not None:

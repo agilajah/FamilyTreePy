@@ -14,6 +14,11 @@ class Person(object):
             self.isDivorced = False
             self.isAdopted = False
 
+    def __eq__(self, other):
+        myId = self.person_id
+        othersId = other.person_id
+        return myId == othersId
+
     def equals(self, comparedPerson):
         if comparedPerson.person_id == self.person_id:
             return True
@@ -31,6 +36,12 @@ class Person(object):
 
     def getName(self):
         return self.name
+
+    def getMother(self):
+        return self.mother
+
+    def getFather(self):
+        return self.father
 
     def isDivorced(self):
         return self.isDivorced

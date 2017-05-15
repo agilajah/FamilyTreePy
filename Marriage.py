@@ -7,6 +7,12 @@ class Marriage(object):
         self.endDate = endDate
 
 
+    def __eq__(self, other):
+        myId = self.id
+        othersId = other.id
+        return myId == othersId
+
+
     def getId(self):
         return self.id
 

@@ -13,6 +13,7 @@ class Person(object):
             self.isMarried = False
             self.isDivorced = False
             self.isAdopted = False
+            self.currentMarriage = -1
 
     def __eq__(self, other):
         myId = self.person_id
@@ -81,3 +82,9 @@ class Person(object):
 
     def setGender(self, gender):
         self.gender = gender
+
+    def getCurrentMarriage(self):
+        return self.currentMarriage
+
+    def setCurrentMarriage(self, currMarriage):
+        self.currentMarriage = currMarriage

@@ -72,6 +72,13 @@ class FamilyTree(object):
                     husbandId = partner2.getItem().getId()
                     wifeId = partner1.getItem().getId()
 
+                # generate a unique id
+                id = len(self.marriage) + len(self.divorce) + 1
+
+                # use id as a unique flag of particular person in marriage
+                partner1.getItem().setCurrentMarriage(id)
+                partner2.getItem().setCurrentMarriage(id)
+
                 temp_marriage = Marriage(id, husbandId, wifeId, startDate)
                 self.marriage.append(temp_marriage)
                 success = True
@@ -79,6 +86,44 @@ class FamilyTree(object):
         return success
 
     def recordDivorce(self, first_person_id, second_person_id, startDate, endDate):
+        success = False
+        partner1 = self.getPerson(first_person_id)
+        partner2 = self.getPerson(second_person_id)
+
+        if partner1 is not None or partner2 is not None:
+            # make sure that the couple actually is married
+            if partner1.sideLinksIsEmpty() is not True or partner2.sideLinksIsEmpty() is not True:
+                partner1.getItem().setIsMarried = False
+                partner2.getItem().setIsMarried = False
+                partner1.getItem().setIsDivorced = True
+                partner2.getItem().setIsDivorced = True
+                # removes link between partners
+                partner1.addSideLink(partner2)
+
+                # change marriage status in marriage object
+                marriageId = partner1.getItem().getCurrentMarriage()
+
+                partner1.getItem.setCurrentMarriage(-1)
+                partner2.getItem.setCurrentMarriage(-1)
+
+                # remove marriage from list of marriage and append it to divorce list
+                temp_marriage = self.getMarriage(marriageId)
+                temp_marriage.setEndDate(endDate)
+                self.marriage.remove(temp_marriage)
+                self.divorce.append(temp_marriage)
+                success = True
+
+        return success
+
+
+
+    def recordAdoption(self, person_id):
+        person = self.getPerson(person_id)
+        if person is not None:
+            person.getItem().setIsAdopted(True)
+            return True
+
+        return False
 
     def personInTree(self, person):
         index = -1

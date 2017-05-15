@@ -146,7 +146,7 @@ class FamilyTreeNode(object):
         return len(self.parentLinks) == 0
 
     def __eq__(self, other):
-        return self.item.person_id == other.item.person_id
+        return self.item.name == other.item.name
 
     def equals(self, comparedNode):
         return self.item.equals(comparedNode.item)

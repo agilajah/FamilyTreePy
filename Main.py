@@ -1,4 +1,5 @@
 from FamilyTree import *
+from helper import QueryPreprocessor
 from helper.MarriageDataLoader import MarriageDataLoader
 from helper.PeopleDataLoader import PeopleDataLoader
 
@@ -11,7 +12,7 @@ def Menu():
     print("4.\tParents details")
     print("5.\tList children")
     print("6.\tList siblings (including half-siblings)")
-    print("7.\tList steps(parents, brothers, sisters, children")
+    print("7.\tList step cildren")
     print("8.\tList uncles, aunties(only biological)")
     print("9.\tList all grandparents")
     print("10.\tList all grandchildren")
@@ -24,6 +25,12 @@ def Menu():
     print("13.\t Want to make your own query?")
     print("14.\t Check if two person is parent and child")
     print("15.\t Check if child is stepchild of some parent")
+    print("16.\t getSisters")
+    print("17.\t getBrothers")
+    print("18.\t getStepSisters")
+    print("19.\t getStepBrothers")
+    print("20.\t getStepFather")
+    print("21.\t getStepMother")
 
 
     print("X\tEXIT\n")
@@ -73,7 +80,7 @@ def sixth_case():
 
 def seventh_case():
     id = input_id()
-    print(FamilyTree.listSteps(id))
+    print(FamilyTree.getStepChildren(id))
 
 def eighth_case():
     id = input_id()
@@ -89,15 +96,17 @@ def tenth_case():
 
 def eleventh_case():
     id = input_id()
-    print(FamilyTree.listNephews(id))
+    print(FamilyTree.getNephews(id))
 
 def twelvth_case():
     id = input_id()
-    print(FamilyTree.listCousins(id))
+    print(FamilyTree.getCousins(id))
 
 def thirteenth_case():
     query = input_query()
-    pass
+    query_processed = QueryPreprocessor.process(query)
+    person = query[-1]
+    print(FamilyTree.processQuery(query_processed, person))
 
 def fourteenth_case():
     parent_id = input_id("Parent")
@@ -116,6 +125,29 @@ def fifteenth_case():
     else:
         print("No")
 
+def sixteenth_case():
+    id = input_id()
+    print(FamilyTree.getSisters(id))
+
+def seventeenth_case():
+    id = input_id()
+    print(FamilyTree.getBrothers(id))
+
+def eighteenth_case():
+    id = input_id()
+    print(FamilyTree.getStepSisters(id))
+
+def nineteenth_case():
+    id = input_id()
+    print(FamilyTree.getStepBrothers(id))
+
+def twentieth_case():
+    id = input_id()
+    print(FamilyTree.getStepFather(id))
+
+def twenty_first_case():
+    id = input_id()
+    print(FamilyTree.getStepMother(id))
 
 mycase = {
     '1': first_case,
@@ -132,7 +164,13 @@ mycase = {
     '12': twelvth_case,
     '13': thirteenth_case,
     '14': fourteenth_case,
-    '15': fifteenth_case
+    '15': fifteenth_case,
+    '16': sixteenth_case,
+    '17': seventeenth_case,
+    '18': eighteenth_case,
+    '19': nineteenth_case,
+    '20': twentieth_case,
+    '21': twenty_first_case
 }
 
 # initialization

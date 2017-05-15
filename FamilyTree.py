@@ -521,12 +521,6 @@ class FamilyTree(object):
         else:
             print("There is particular person in database.")
 
-    def listSteps(self, person_id):
-        global details
-        print("Step Children: \n")
-        details = self.getStepChildren(person_id)
-        self.listStepSiblings(person_id)
-
     def listGrandParents(self, person_id):
         details = ""
         person_name = ""
@@ -589,12 +583,31 @@ class FamilyTree(object):
 
         return details
 
-
-    def listNephews(self, person_id):
-        pass
-
-
     def listUnclesAunties(self, person_id):
+        details = ""
+        node = self.getPerson(person_id)
+
+        # find parents
+        if node is not None:
+            person_name = node.getItem().getName()
+            temp_aunties = self.getAunties(person_id)
+            temp_uncles = self.getUncles(person_id)
+
+            if temp_aunties is not None:
+                details += temp_aunties
+            if temp_uncles is not None:
+                details += temp_uncles
+
+            if len(details) == 0:
+                details += person_name + " has no uncles or aunts"
+
+
+        else:
+            details += "There is no record of person with id: %s" % person_id
+
+        return details
+
+    def getAunties(self, person_id):
         details = ""
         person_name = ""
         node = self.getPerson(person_id)
@@ -610,26 +623,16 @@ class FamilyTree(object):
                     # find uncle and aunts
                     parent_sibling_list = grand_parent.getChildLinks()
                     for parent_sibling in parent_sibling_list:
-                        # find cousins
                         if parent_sibling != parent:
-                            cousin_list = parent_sibling.getChildLinks()
-                            for cousin in cousin_list:
-                                if len(details) == 0:
-                                    if cousin.getItem().isAdopted():
-                                        details += person_name + "'s adoptive cousins:\n"
-                                    else:
-                                        details += person_name + "'s cousins:\n"
-                                    # if not listed yet
-                                    if details.find(str(cousin.getItem())) == -1:
-                                        if (cousin.getItem().isAdopted()):
-                                            details += "Adopted cousin: "
-                                        else:
-                                            details += "Cousin: "
-
-                                        details += str(cousin.getItem()) + "\n"
+                            if len(details) == 0:
+                                details += person_name + "'s aunties:\n"
+                                # aunties
+                                if (str(parent_sibling.getItem().getGender()).lower() == "female"):
+                                    details += "Aunt: "
+                                    details += str(parent_sibling.getItem()) + "\n"
 
                 if len(details) == 0:
-                    details += person_name + " has no cousins"
+                    details += person_name + " has no aunties"
             else:
                 details += " has no parent listed. "
 
@@ -638,7 +641,41 @@ class FamilyTree(object):
 
         return details
 
-    def listCousins(self, person_id):
+    def getUncles(self, person_id):
+        details = ""
+        person_name = ""
+        node = self.getPerson(person_id)
+
+        # find parents
+        if node is not None:
+            person_name = node.getItem().getName()
+            parent_list = node.getParentLinks()
+            for parent in parent_list:
+                # find grandparents
+                grand_parent_list = parent.getParentLinks()
+                for grand_parent in grand_parent_list:
+                    # find uncle and aunts
+                    parent_sibling_list = grand_parent.getChildLinks()
+                    for parent_sibling in parent_sibling_list:
+                        if parent_sibling != parent:
+                            if len(details) == 0:
+                                details += person_name + "'s uncles:\n"
+                                # uncles
+                                if (str(parent_sibling.getItem().getGender()).lower() == "male"):
+                                    details += "Uncle: "
+                                    details += str(parent_sibling.getItem()) + "\n"
+
+                if len(details) == 0:
+                    details += person_name + " has no uncles"
+            else:
+                details += " has no parent listed. "
+
+        else:
+            details += "There is no record of person with id: %s" % person_id
+
+        return details
+
+    def getCousins(self, person_id):
         details = ""
         person_name = ""
         node = self.getPerson(person_id)
@@ -704,3 +741,224 @@ class FamilyTree(object):
                         return child == child_asked
 
         return False
+
+
+    def getNephews(self, person_id):
+        details = ""
+        person_name = ""
+
+        node = self.getPerson(person_id)
+
+        if node is not None:
+            person_name = node.getItem().getName()
+            parents = node.getParentLinks()
+
+            for parent in parents:
+                child_list = parent.getChildLinks()
+
+                for brother_sister in child_list:
+                    if brother_sister.getItem().isAdopted() is False:
+                        brother_sister_child = brother_sister.getChildLinks()
+                        for nephew in brother_sister_child:
+                            if node.containsLinkToChild(nephew) is False:
+                                if details.find(str(nephew.getItem())) == -1:
+                                    details += str(nephew.getItem()) + "\n"
+            if len(details)==0:
+                details += person_name + " has no nephew."
+        else:
+            details += "There is no person with id: %s in record" %person_id
+
+
+        return details
+
+    def getBrothers(self, person_id):
+        details = ""
+
+        node = self.getPerson(person_id)
+
+        if node is not None:
+            person_name = node.getItem().getName()
+            parents = node.getParentLinks()
+
+            for parent in parents:
+                child_list = parent.getChildLinks()
+
+                for brother in child_list:
+                    if brother != node:
+                        if (brother.getItem().getGender()).lower() == "male":
+                            if details.find(str(brother.getItem())) == -1:
+                                details += str(brother.getItem()) + "\n"
+
+            if len(details) == 0:
+                details += person_name + " has no brother."
+        else:
+            details += "There is no person with id: %s in record" % person_id
+
+        return details
+
+
+    def getSisters(self, person_id):
+        details = ""
+
+        node = self.getPerson(person_id)
+
+        if node is not None:
+            person_name = node.getItem().getName()
+            parents = node.getParentLinks()
+
+            for parent in parents:
+                child_list = parent.getChildLinks()
+
+                for sister in child_list:
+                    if sister != node:
+                        if (sister.getItem().getGender()).lower() == "female":
+                            if details.find(str(sister.getItem())) == -1:
+                                details += str(sister.getItem()) + "\n"
+
+            if len(details) == 0:
+                details += person_name + " has no sisters."
+        else:
+            details += "There is no person with id: %s in record" % person_id
+
+        return details
+
+    def getStepBrothers(self, person_id):
+        details = ""
+        global node
+        person_name = ""
+        node = self.getPerson(person_id)
+
+        if node is not None:
+            person_name = node.getItem().getName()
+            mother = self.getPerson(node.getItem().getMother())
+            father = self.getPerson(node.getItem().getFather())
+            temp = mother.getSideLinks()
+            partnerMother = None
+            partnerFather = None
+            if len(temp) > 0:
+                partnerMother = temp[0]
+                if partnerMother is not None:
+                    child_list = partnerMother.getChildLinks()
+                    if child_list is not None:
+                        for child in child_list:
+                            if node.containsLinkToChild(child) is False:
+                                if str(child.getItem().getGender()).lower() == "male":
+                                    if details.find(str(child.getItem())) == -1:
+                                        details += "StepBrother: " + str(child.getItem()) + "\n"
+
+                temp2 = father.getSideLinks()
+                if len(temp2) > 0:
+                    partnerFather = temp2[0]
+                if partnerFather is not None:
+                    child_list = partnerFather.getChildLinks()
+                    if child_list is not None:
+                        for child in child_list:
+                            if node.containsLinkToChild(child) is False:
+                                if str(child.getItem().getGender()).lower() == "male":
+                                   details += "StepBrother: " + str(child.getItem()) + "\n"
+            else:
+                print("There is no step brother for %s in database." % person_name)
+
+        else:
+            print("There is particular person in database.")
+
+        return details
+
+    def getStepSisters(self, person_id):
+        details = ""
+        global node
+        person_name = ""
+        node = self.getPerson(person_id)
+
+        if node is not None:
+            person_name = node.getItem().getName()
+            mother = self.getPerson(node.getItem().getMother())
+            father = self.getPerson(node.getItem().getFather())
+            temp = mother.getSideLinks()
+            partnerMother = None
+            partnerFather = None
+            if len(temp) > 0:
+                partnerMother = temp[0]
+                if partnerMother is not None:
+                    child_list = partnerMother.getChildLinks()
+                    if child_list is not None:
+                        for child in child_list:
+                            if node.containsLinkToChild(child) is False:
+                                if str(child.getItem().getGender()).lower() == "female":
+                                    details += "StepSister: " + str(child.getItem()) + "\n"
+
+                temp2 = father.getSideLinks()
+                if len(temp2) > 0:
+                    partnerFather = temp2[0]
+                if partnerFather is not None:
+                    child_list = partnerFather.getChildLinks()
+                    if child_list is not None:
+                        for child in child_list:
+                            if node.containsLinkToChild(child) is False:
+                                if str(child.getItem().getGender()).lower() == "female":
+                                    details += "StepSister: " + str(child.getItem()) + "\n"
+            else:
+                print("There is no step sisters for %s in database." % person_name)
+
+        else:
+            print("There is particular person in database.")
+
+        return details
+
+    def getStepMother(self, person_id):
+        details =""
+        global node
+        person_name = ""
+        node = self.getPerson(person_id)
+
+        if node is not None:
+            person_name = node.getItem().getName()
+            father = self.getPerson(node.getItem().getFather())
+            temp = father.getSideLinks()
+            partnerFather = None
+            if len(temp) > 0:
+                partnerFather = temp[0]
+                if partnerFather is not None:
+                    if partnerFather.containsLinkToChild(node) is False:
+                        details += "step mom : " + str(partnerFather.getItem())
+
+            else:
+                print("There is no step mom for %s in database." % person_name)
+
+        else:
+            print("There is particular person in database.")
+
+        return details
+
+    def getStepFather(self, person_id):
+        details = ""
+        global node
+        person_name = ""
+        node = self.getPerson(person_id)
+
+        if node is not None:
+            person_name = node.getItem().getName()
+            mother = self.getPerson(node.getItem().getMother())
+            temp = mother.getSideLinks()
+            partnerMother = None
+            if len(temp) > 0:
+                partnerMother = temp[0]
+                if partnerMother is not None:
+                    if partnerMother.containsLinkToChild(node) is False:
+                        details += "step dad : " + str(partnerMother.getItem())
+
+            else:
+                print("There is no step dad for %s in database." % person_name)
+
+        else:
+            print("There is particular person in database.")
+
+        return details
+
+    def processQuery(self, query_processed, person):
+        temp_request = []
+        result = []
+        index = 0
+        temp_request.append(person)
+        while index < len(query_processed)-1:
+            pass

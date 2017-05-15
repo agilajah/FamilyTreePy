@@ -16,8 +16,8 @@ class Person(object):
             self.currentMarriage = -1
 
     def __eq__(self, other):
-        myId = self.person_id
-        othersId = other.person_id
+        myId = self.name
+        othersId = other.name
         return myId == othersId
 
     def __str__(self):

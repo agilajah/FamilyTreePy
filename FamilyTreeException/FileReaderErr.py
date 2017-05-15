@@ -18,7 +18,7 @@ class FatherDontExistError(PeopleDontExistError):
         if msg is not None:
             self.msg = msg
         else:
-            self.msg = "Father with id %d doesn\'t exist" % int(id)
+            self.msg = "Father with id %s doesn\'t exist" % str(id)
 
     def printMsg(self):
         return self.msg

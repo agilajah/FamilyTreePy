@@ -10,6 +10,15 @@ class FamilyTree(object):
         self.divorce = []
 
 
+    def setPeopleList(self, people):
+        self.people = people
+
+    def setMarriageList(self, marriage):
+        self.marriage = marriage
+
+    def setDivorce(self, divorce):
+        self.divorce = divorce
+
     def addPerson(self, person):
         success = False
 
@@ -117,7 +126,6 @@ class FamilyTree(object):
         return success
 
 
-
     def recordAdoption(self, person_id):
         person = self.getPerson(person_id)
         if person is not None:
@@ -126,12 +134,54 @@ class FamilyTree(object):
 
         return False
 
-    def personInTree(self, person):
+
+    def hasMother(self, person_id):
+        person = self.getPerson(person_id)
+        if person is not None:
+            for parent in person.getParentLinks():
+                if parent.getItem().isMother():
+                    return True
+
+        return False
+
+    def hasFather(self, person_id):
+        person = self.getPerson(person_id)
+        if person is not None:
+            for parent in person.getParentLinks():
+                if parent.getItem().isFather():
+                    return True
+
+        return False
+
+    def hasPartner(self, person_id):
+        person = self.getPerson(person_id)
+        if person is not None:
+            if person.getItem().isMarried():
+                return True
+
+        return False
+
+
+    def personInTree(self, comparedPerson = None, person_id = None):
         index = -1
-        comparedPerson = Person(person.person_id, person.name, person.gender, person.birth_date, person.father, person.mother)
-        for node in self.people:
-            index = index + 1
-            if node.item == comparedPerson:
-                return index
+
+        if comparedPerson is not None:
+           for node in self.people:
+                index = index + 1
+                if node.item == comparedPerson:
+                    return index
+        elif person_id is not None:
+            for node in self.people:
+                index = index + 1
+                if person_id == node.getItem().getPersonId():
+                    return index
 
         return -1
+
+    def getPerson(self, person_id):
+        index = self.personInTree(person_id)
+        person = None
+        if index != -1 and index <= len(self.people):
+            person = self.people[index]
+
+        return person

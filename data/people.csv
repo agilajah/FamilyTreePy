@@ -1,0 +1,6 @@
+1;A;male;1985-12-30;null;null;
+2;E;male;1945-08-12;null;null;
+3;F;female;1955-09-29;null;null;
+4;D;female;1988-07-10;2;3;
+5;B;female;2010-03-12;1;4;
+6;C;male;2011-02-23;1;4

@@ -13,7 +13,7 @@ class Marriage(object):
         return myId == othersId
 
 
-    def getId(self):
+    def getPersonId(self):
         return self.id
 
     def getHusband(self):

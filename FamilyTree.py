@@ -282,11 +282,13 @@ class FamilyTree(object):
 
     # find blood parent
     def listParents(self, person_id):
+        person_name = ""
         node = self.getPerson(person_id)
-        person = node.getItem()
-        person_name = person.getName()
+
         emp = None
         if node is not None:
+            person = node.getItem()
+            person_name = person.getName()
             local_details = ""
             if node.linksToParentIsEmpty() is False:
                 parents = node.getParentLinks()
@@ -309,11 +311,13 @@ class FamilyTree(object):
 
     # find step parent
     def listStepParents(self, person_id):
+        person_name = ""
         node = self.getPerson(person_id)
-        person = node.getItem()
-        person_name = person.getName()
+
         emp = None
         if node is not None:
+            person = node.getItem()
+            person_name = person.getName()
             local_details = ""
             if node.linksToParentIsEmpty() is False:
                 parents = node.getParentLinks()
@@ -332,6 +336,7 @@ class FamilyTree(object):
 
     def listParentDetails(self, person_id):
         details = ""
+        person_name = ""
         node = self.getPerson(person_id)
 
         if node is not None:
@@ -391,9 +396,11 @@ class FamilyTree(object):
         global sibling
         # make sure person exist
         node = self.getPerson(person_id)
-        person_name = node.getItem().getName()
+        person_name = ""
+
 
         if node is not None:
+            person_name = node.getItem().getName()
             # first, we check if person has parents
             if node.linksToParentIsEmpty() is False:
                 parents = node.getParentLinks()
@@ -459,9 +466,11 @@ class FamilyTree(object):
     def getStepChildren(self, person_id):
         global details
         global node
+        person_name = ""
         node = self.getPerson(person_id)
-        person_name = node.getItem().getName()
+
         if node is not None:
+            person_name = node.getItem().getName()
             temp = node.getSideLinks()
             partner = None
             if len(temp) > 0:
@@ -481,18 +490,19 @@ class FamilyTree(object):
 
 
     def listChildren(self, person_id):
-
+        person_name = ""
         node = self.getPerson(person_id)
-        person_name = node.getItem().getName()
+
         if node is not None:
+            person_name = node.getItem().getName()
             if node.linksToChildIsEmpty() is False:
                 details = person_name + "'s children: \n"
                 child_list = node.getChildLinks()
                 for child in child_list:
                     if child.getItem().isAdopted():
-                        details += "Adopted child: \n"
+                        details += "Adopted child: "
                     else:
-                        details += "Child \n"
+                        details += "Child "
 
                     details +=  str(child.getItem()) + "\n"
 
@@ -517,20 +527,164 @@ class FamilyTree(object):
         details = self.getStepChildren(person_id)
         self.listStepSiblings(person_id)
 
-    def listUnclesAunties(self, person_id):
-        pass
     def listGrandParents(self, person_id):
-        pass
+        details = ""
+        person_name = ""
+        node = self.getPerson(person_id)
+        if node is not None:
+            person_name = node.getItem().getName()
+            parent_list = node.getParentLinks()
+            for parent in parent_list:
+                grand_parent_list = parent.getParentLinks()
+                for grand_parent in grand_parent_list:
+                    if len(details) == 0:
+                        if node.getItem().isAdopted():
+                            details += person_name + "'s adoptive grandparents:\n"
+                        else:
+                            details += person_name + "'s grandparents:\n"
+                    if(grand_parent.getItem().isMother()):
+                        details += "GrandMother: "
+                    else:
+                        details += "GrandFather: "
+
+                    details += str(grand_parent.getItem()) + "\n"
+
+            if len(details) == 0:
+                details += person_name + "'s doesnt have any grandparents."
+        else:
+            details += "There is no person with that id."
+
+        return details
+
+
+
     def listGrandChildren(self, person_id):
-        pass
+        details = ""
+        person_name = ""
+        node = self.getPerson(person_id)
+        if node is not None:
+            person_name = node.getItem().getName()
+            if node.linksToChildIsEmpty() is False:
+                child_list = node.getChildLinks()
+                for child in child_list:
+                    grand_child_list = child.getChildLinks()
+                    for grand_child in grand_child_list:
+                        if len(details) == 0:
+                            details += person_name + "'s grandchildren: \n"
+
+                        if node.getItem().isAdopted():
+                            details += "'s adopted grandchild:\n"
+                        else:
+                            details += " grandchild:\n"
+
+
+                        details += str(grand_child.getItem()) + "\n"
+
+                if len(details) == 0:
+                    details += person_name + "'s doesnt have any grandchildren."
+
+
+        else:
+            details += "There is no person with id: %s in database" % person_id
+
+        return details
+
+
     def listNephews(self, person_id):
         pass
+
+
+    def listUnclesAunties(self, person_id):
+        details = ""
+        person_name = ""
+        node = self.getPerson(person_id)
+
+        # find parents
+        if node is not None:
+            person_name = node.getItem().getName()
+            parent_list = node.getParentLinks()
+            for parent in parent_list:
+                # find grandparents
+                grand_parent_list = parent.getParentLinks()
+                for grand_parent in grand_parent_list:
+                    # find uncle and aunts
+                    parent_sibling_list = grand_parent.getChildLinks()
+                    for parent_sibling in parent_sibling_list:
+                        # find cousins
+                        if parent_sibling != parent:
+                            cousin_list = parent_sibling.getChildLinks()
+                            for cousin in cousin_list:
+                                if len(details) == 0:
+                                    if cousin.getItem().isAdopted():
+                                        details += person_name + "'s adoptive cousins:\n"
+                                    else:
+                                        details += person_name + "'s cousins:\n"
+                                    # if not listed yet
+                                    if details.find(str(cousin.getItem())) == -1:
+                                        if (cousin.getItem().isAdopted()):
+                                            details += "Adopted cousin: "
+                                        else:
+                                            details += "Cousin: "
+
+                                        details += str(cousin.getItem()) + "\n"
+
+                if len(details) == 0:
+                    details += person_name + " has no cousins"
+            else:
+                details += " has no parent listed. "
+
+        else:
+            details += "There is no record of person with id: %s" % person_id
+
+        return details
+
     def listCousins(self, person_id):
-        pass
+        details = ""
+        person_name = ""
+        node = self.getPerson(person_id)
+
+        # find parents
+        if node is not None:
+            person_name = node.getItem().getName()
+            parent_list = node.getParentLinks()
+            for parent in parent_list:
+                # find grandparents
+                grand_parent_list = parent.getParentLinks()
+                for grand_parent in grand_parent_list:
+                    # find uncle and aunts
+                    parent_sibling_list = grand_parent.getChildLinks()
+                    for parent_sibling in parent_sibling_list:
+                        # find cousins
+                        if parent_sibling != parent:
+                            cousin_list = parent_sibling.getChildLinks()
+                            for cousin in cousin_list:
+                                if len(details) == 0:
+                                    if cousin.getItem().isAdopted():
+                                        details += person_name + "'s adoptive cousins:\n"
+                                    else:
+                                        details += person_name + "'s cousins:\n"
+                                    # if not listed yet
+                                    if details.find(str(cousin.getItem())) == -1:
+                                        if (cousin.getItem().isAdopted()):
+                                            details += "Adopted cousin: "
+                                        else:
+                                            details += "Cousin: "
+
+                                        details += str(cousin.getItem()) + "\n"
+
+                if len(details) == 0:
+                    details += person_name + " has no cousins"
+            else:
+                details += " has no parent listed. "
+
+        else:
+            details += "There is no record of person with id: %s" % person_id
+
+        return details
 
     def isParent(self, parent_id, child_id):
         parent = self.getPerson(parent_id)
-        child = self.getPerson(child_id).getItem()
+        child = self.getPerson(child_id)
         if parent is not None and child is not None:
             return parent.containsLinkToChild(child)
         else:

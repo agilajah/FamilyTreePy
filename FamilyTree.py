@@ -100,6 +100,7 @@ class FamilyTree(object):
                 # removes link between partners
                 partner1.addSideLink(partner2)
 
+
                 # change marriage status in marriage object
                 marriageId = partner1.getItem().getCurrentMarriage()
 

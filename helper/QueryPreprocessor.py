@@ -1,5 +1,4 @@
 class QueryPreprocessor(object):
-
     def process(self, query):
         # remove all of
         temp_query = query

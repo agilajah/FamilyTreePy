@@ -1,7 +1,7 @@
 from FamilyTree import *
-from helper import QueryPreprocessor
 from helper.MarriageDataLoader import MarriageDataLoader
 from helper.PeopleDataLoader import PeopleDataLoader
+from helper.QueryPreprocessor import QueryPreprocessor
 
 
 def Menu():
@@ -46,7 +46,8 @@ def input_id(type="Person"):
     return id
 
 def input_query():
-    pass
+    query = "Input query: "
+    return query
 
 def first_case():
     id = input_id()
@@ -104,9 +105,10 @@ def twelvth_case():
 
 def thirteenth_case():
     query = input_query()
-    query_processed = QueryPreprocessor.process(query)
+    preprocessor = QueryPreprocessor()
+    query_processed = preprocessor.process(query)
     person = query[-1]
-    print(FamilyTree.processQuery(query_processed, person))
+    print(FamilyTree.find(FamilyTree ,query_processed, person))
 
 def fourteenth_case():
     parent_id = input_id("Parent")

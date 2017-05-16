@@ -160,17 +160,18 @@ class FamilyTree(object):
             if person.isDivorced():
                 details = details + pronoun + " has had a/some divorce(s) in the past."
                 former_spouses = self.getFormerSpouses(person_id)
-                if len(former_spouses) > 0:
-                    index = 0
-                    spouses_name = ""
-                    while index < len(former_spouses):
+                if former_spouses is not None:
+                    if len(former_spouses) > 0:
+                        index = 0
+                        spouses_name = ""
+                        while index < len(former_spouses):
 
-                        spouses_name += " " + former_spouses[index].getItem().getName()
-                        if index < len(former_spouses):
-                            spouses_name += ","
-                        index = index + 1
+                            spouses_name += " " + former_spouses[index].getItem().getName()
+                            if index < len(former_spouses):
+                                spouses_name += ","
+                            index = index + 1
 
-                    details = details + " Namely," + spouses_name
+                        details = details + " Namely," + spouses_name
 
         else:
             print("%s is not in the database" % person_name)
@@ -257,11 +258,13 @@ class FamilyTree(object):
 
     def getFormerSpouses(self, person_id):
         node = self.getPerson(person_id)
+        nodes = []
         former_spouse = node.getFormerSpouses()
         if len(former_spouse) == 0:
             print(node.getItem().getName() + " has no former spouse(s)")
         else:
-            return former_spouse
+            nodes.append(former_spouse)
+            return nodes
 
     def getSpouse(self, person_id):
         node = self.getPerson(person_id)
@@ -313,8 +316,7 @@ class FamilyTree(object):
     def listStepParents(self, person_id):
         person_name = ""
         node = self.getPerson(person_id)
-
-        emp = None
+        nodes = []
         if node is not None:
             person = node.getItem()
             person_name = person.getName()
@@ -325,19 +327,22 @@ class FamilyTree(object):
                     if parent.sideLinksIsEmpty() is False and node.containsLinkToParent(parent.getSideLinks()[0]) is False:
                         local_details = local_details + "StepParent: "
                         local_details += str(parent.getSideLinks()[0].getItem())
+                        nodes.append(parent.getSideLinks()[0].getItem())
                 return local_details
             else:
                 print("%s has no step parents on record." % person_name)
         else:
             print("There is no %s in database" % person_name)
 
-        return emp
+        print(details)
+        #return nodes
 
 
     def listParentDetails(self, person_id):
         details = ""
         person_name = ""
         node = self.getPerson(person_id)
+        nodes = []
 
         if node is not None:
             person = node.getItem()
@@ -345,15 +350,17 @@ class FamilyTree(object):
             temp = self.listParents(person_id)
             if temp is not None:
                 details = details + temp
+                nodes.append(temp)
 
             temp = self.listStepParents(person_id)
-            if temp is not None:
-                details = details + temp
+            if len(temp) > 0:
+                nodes.append(temp)
 
         if details is None:
             details = person_name + " doesn't have any parent listed."
 
-        return details
+        print(details)
+        #return nodes
 
 
 
@@ -390,6 +397,7 @@ class FamilyTree(object):
 
     def listSiblings(self, person_id):
         global details
+        nodes = []
         halfsiblings = []
         fullsiblings = []
         stepsiblings = []
@@ -463,9 +471,17 @@ class FamilyTree(object):
         else:
             print("There is no %s in database", person_name)
 
+        nodes.append(fullsiblings)
+        nodes.append(halfsiblings)
+        nodes.append(stepsiblings)
+
+        print(details)
+        #return nodes
+
     def getStepChildren(self, person_id):
-        global details
+        details = ""
         global node
+        nodes = []
         person_name = ""
         node = self.getPerson(person_id)
 
@@ -481,17 +497,22 @@ class FamilyTree(object):
                     for child in child_list:
                         if node.containsLinkToChild(child) is False:
                             print ("Stepchild: " + str(child.getItem()) + "\n")
+                            nodes.append(child.getItem())
             else:
                 print("There is no step child for %s in database." % person_name)
 
         else:
             print("There is particular person in database.")
 
+        print(details)
+        #return nodes
 
 
     def listChildren(self, person_id):
         person_name = ""
+        nodes = []
         node = self.getPerson(person_id)
+        details = ""
 
         if node is not None:
             person_name = node.getItem().getName()
@@ -505,24 +526,29 @@ class FamilyTree(object):
                         details += "Child "
 
                     details +=  str(child.getItem()) + "\n"
+                    nodes.append(child.getItem())
 
                 # now check if partner have step children
                 tempstep = self.getStepChildren(person_id)
                 if tempstep is not None:
                     details += tempstep
+                    nodes.append(tempstep.getItem())
 
                 if details is None:
                     print("%s has no child on record." % person_name)
 
-                return details
             else:
                 print("There is no child for %s in database." % person_name)
 
         else:
             print("There is particular person in database.")
 
+        print(details)
+        #return nodes
+
     def listGrandParents(self, person_id):
         details = ""
+        nodes = []
         person_name = ""
         node = self.getPerson(person_id)
         if node is not None:
@@ -542,18 +568,21 @@ class FamilyTree(object):
                         details += "GrandFather: "
 
                     details += str(grand_parent.getItem()) + "\n"
+                    nodes.append(grand_parent.getItem())
 
             if len(details) == 0:
                 details += person_name + "'s doesnt have any grandparents."
         else:
             details += "There is no person with that id."
 
-        return details
+        print(details)
+        #return nodes
 
 
 
     def listGrandChildren(self, person_id):
         details = ""
+        nodes = []
         person_name = ""
         node = self.getPerson(person_id)
         if node is not None:
@@ -562,6 +591,7 @@ class FamilyTree(object):
                 child_list = node.getChildLinks()
                 for child in child_list:
                     grand_child_list = child.getChildLinks()
+                    print(child.getItem().getName())
                     for grand_child in grand_child_list:
                         if len(details) == 0:
                             details += person_name + "'s grandchildren: \n"
@@ -573,6 +603,7 @@ class FamilyTree(object):
 
 
                         details += str(grand_child.getItem()) + "\n"
+                        nodes.append(grand_child.getItem())
 
                 if len(details) == 0:
                     details += person_name + "'s doesnt have any grandchildren."
@@ -581,7 +612,8 @@ class FamilyTree(object):
         else:
             details += "There is no person with id: %s in database" % person_id
 
-        return details
+        print(details)
+        #return nodes
 
     def listUnclesAunties(self, person_id):
         details = ""
@@ -609,6 +641,7 @@ class FamilyTree(object):
 
     def getAunties(self, person_id):
         details = ""
+        nodes = []
         person_name = ""
         node = self.getPerson(person_id)
 
@@ -630,6 +663,7 @@ class FamilyTree(object):
                                 if (str(parent_sibling.getItem().getGender()).lower() == "female"):
                                     details += "Aunt: "
                                     details += str(parent_sibling.getItem()) + "\n"
+                                    nodes.append(parent_sibling.getItem())
 
                 if len(details) == 0:
                     details += person_name + " has no aunties"
@@ -639,11 +673,13 @@ class FamilyTree(object):
         else:
             details += "There is no record of person with id: %s" % person_id
 
-        return details
+        print(details)
+        #return nodes
 
     def getUncles(self, person_id):
         details = ""
         person_name = ""
+        nodes = []
         node = self.getPerson(person_id)
 
         # find parents
@@ -664,6 +700,7 @@ class FamilyTree(object):
                                 if (str(parent_sibling.getItem().getGender()).lower() == "male"):
                                     details += "Uncle: "
                                     details += str(parent_sibling.getItem()) + "\n"
+                                    nodes.append(parent_sibling.getItem())
 
                 if len(details) == 0:
                     details += person_name + " has no uncles"
@@ -673,10 +710,12 @@ class FamilyTree(object):
         else:
             details += "There is no record of person with id: %s" % person_id
 
-        return details
+        print(details)
+        #return nodes
 
     def getCousins(self, person_id):
         details = ""
+        nodes = []
         person_name = ""
         node = self.getPerson(person_id)
 
@@ -709,6 +748,9 @@ class FamilyTree(object):
 
                                         details += str(cousin.getItem()) + "\n"
 
+                                        nodes.append(cousin.getItem())
+
+
                 if len(details) == 0:
                     details += person_name + " has no cousins"
             else:
@@ -717,7 +759,8 @@ class FamilyTree(object):
         else:
             details += "There is no record of person with id: %s" % person_id
 
-        return details
+        print(details)
+        #return nodes
 
     def isParent(self, parent_id, child_id):
         parent = self.getPerson(parent_id)
@@ -746,6 +789,7 @@ class FamilyTree(object):
     def getNephews(self, person_id):
         details = ""
         person_name = ""
+        nodes = []
 
         node = self.getPerson(person_id)
 
@@ -763,17 +807,19 @@ class FamilyTree(object):
                             if node.containsLinkToChild(nephew) is False:
                                 if details.find(str(nephew.getItem())) == -1:
                                     details += str(nephew.getItem()) + "\n"
+                                    nodes.append(nephew.getItem())
             if len(details)==0:
                 details += person_name + " has no nephew."
         else:
             details += "There is no person with id: %s in record" %person_id
 
 
-        return details
+        print(details)
+        #return nodes
 
     def getBrothers(self, person_id):
         details = ""
-
+        nodes = []
         node = self.getPerson(person_id)
 
         if node is not None:
@@ -788,18 +834,20 @@ class FamilyTree(object):
                         if (brother.getItem().getGender()).lower() == "male":
                             if details.find(str(brother.getItem())) == -1:
                                 details += str(brother.getItem()) + "\n"
+                                nodes.append(brother.getItem())
 
             if len(details) == 0:
                 details += person_name + " has no brother."
         else:
             details += "There is no person with id: %s in record" % person_id
 
-        return details
+        print(details)
+        #return nodes
 
 
     def getSisters(self, person_id):
         details = ""
-
+        nodes = []
         node = self.getPerson(person_id)
 
         if node is not None:
@@ -814,16 +862,19 @@ class FamilyTree(object):
                         if (sister.getItem().getGender()).lower() == "female":
                             if details.find(str(sister.getItem())) == -1:
                                 details += str(sister.getItem()) + "\n"
+                                nodes.append(sister.getItem())
 
             if len(details) == 0:
                 details += person_name + " has no sisters."
         else:
             details += "There is no person with id: %s in record" % person_id
 
-        return details
+        print(details)
+        #return nodes
 
     def getStepBrothers(self, person_id):
         details = ""
+        nodes = []
         global node
         person_name = ""
         node = self.getPerson(person_id)
@@ -856,16 +907,19 @@ class FamilyTree(object):
                             if node.containsLinkToChild(child) is False:
                                 if str(child.getItem().getGender()).lower() == "male":
                                    details += "StepBrother: " + str(child.getItem()) + "\n"
+                                   nodes.append(child.getItem())
             else:
                 print("There is no step brother for %s in database." % person_name)
 
         else:
             print("There is particular person in database.")
 
-        return details
+        print(details)
+        #return nodes
 
     def getStepSisters(self, person_id):
         details = ""
+        nodes = []
         global node
         person_name = ""
         node = self.getPerson(person_id)
@@ -897,16 +951,19 @@ class FamilyTree(object):
                             if node.containsLinkToChild(child) is False:
                                 if str(child.getItem().getGender()).lower() == "female":
                                     details += "StepSister: " + str(child.getItem()) + "\n"
+                                    nodes.append(child.getItem())
             else:
                 print("There is no step sisters for %s in database." % person_name)
 
         else:
             print("There is particular person in database.")
 
-        return details
+        print(details)
+        #return nodes
 
     def getStepMother(self, person_id):
         details =""
+        nodes = []
         global node
         person_name = ""
         node = self.getPerson(person_id)
@@ -921,6 +978,7 @@ class FamilyTree(object):
                 if partnerFather is not None:
                     if partnerFather.containsLinkToChild(node) is False:
                         details += "step mom : " + str(partnerFather.getItem())
+                        nodes.append(partnerFather.getItem())
 
             else:
                 print("There is no step mom for %s in database." % person_name)
@@ -928,10 +986,12 @@ class FamilyTree(object):
         else:
             print("There is particular person in database.")
 
-        return details
+        print(details)
+        #return nodes
 
     def getStepFather(self, person_id):
         details = ""
+        nodes = []
         global node
         person_name = ""
         node = self.getPerson(person_id)
@@ -946,6 +1006,7 @@ class FamilyTree(object):
                 if partnerMother is not None:
                     if partnerMother.containsLinkToChild(node) is False:
                         details += "step dad : " + str(partnerMother.getItem())
+                        nodes.append(partnerMother.getItem())
 
             else:
                 print("There is no step dad for %s in database." % person_name)
@@ -953,12 +1014,50 @@ class FamilyTree(object):
         else:
             print("There is particular person in database.")
 
-        return details
+        print(details)
+        #return nodes
 
-    def processQuery(self, query_processed, person):
+    def find(self, familyTree, query_processed, person):
         temp_request = []
         result = []
         index = 0
         temp_request.append(person)
         while index < len(query_processed)-1:
             pass
+
+    # while target still exist
+    def switcher(self, command, target):
+        result = []
+        index = 0
+        while len(target) >= 0:
+            comm = str(command).lower()
+            if comm == "brother":
+                result.append(self.getBrothers(target[index].getPersonId()))
+            elif comm == "stepbrother":
+                result.append(self.getStepFather(target[index].getPersonId()))
+            elif comm == "sister":
+                result.append(self.getSisters(target[index].getPersonId()))
+            elif comm == "stepsister":
+                result.append(self.getStepSisters(target[index].getPersonId()))
+            # elif comm == "parent":
+            #     parent_case()
+            # elif comm == "stepparent":
+            #     step_parent_case()
+            # elif comm == "children":
+            #     children_case()
+
+            index += 1
+
+        return result
+
+    def bfs_paths(self, familyTree, command, target):
+        stack = command.pop(-1)
+        queue = []
+        queue.append(target)
+        Proses = True
+        while Proses:
+            Person = queue.pop(0)
+            current_command = stack.pop(-1)
+            queue.append(self.switcher(current_command, Person))
+
+#    list(bfs_paths(graph, 'A', 'F'))  # [['A', 'C', 'F'], ['A', 'B', 'E', 'F']]
